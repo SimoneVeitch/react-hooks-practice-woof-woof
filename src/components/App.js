@@ -1,17 +1,33 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import DogBar from "./DogBar"
+import DogList from "./DogList";
+import Filter from "./Filter";
 
 function App() {
+  const [pups, setPups] = useState([]);
+  const [selectedDog, setSelectedDog] = useState(null);
+  const [isOn, setIsOn] = useState(false); 
+
+  useEffect(() => {
+    fetch("http://localhost:3001/pups")
+    .then((response) => response.json())
+    .then((pupData) => {
+      setPups(pupData);
+  });
+}, []);
+
+function handleSelectDog(id) {
+  const selected = pups.find((pup) => pup.id === id);
+  setSelectedDog(selected);
+}
+
   return (
     <div className="App">
-      <div id="filter-div">
-        <button id="good-dog-filter">Filter good dogs: OFF</button>
-      </div>
-      <div id="dog-bar"></div>
-      <div id="dog-summary-container">
+      <Filter isOn={isOn} setIsOn={setIsOn}/>
+      <DogBar pups={pups} onSelectDog={handleSelectDog}/>
         <h1>DOGGO:</h1>
-        <div id="dog-info"></div>
+        <DogList selectedDog={selectedDog} pups={pups} isOn={isOn}/>
       </div>
-    </div>
   );
 }
 
